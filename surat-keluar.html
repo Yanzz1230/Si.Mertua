@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistem Administrasi Penomoran Surat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-left">
+    <img src="logo ditjenim.png" alt="Logo Imigrasi"/>
+    <span>SIMERTUA</span>
+  </div>
+  <ul class="nav-right">
+    <li><a href="surat-keluar.html" class="active">Surat</a></li>
+    <li><a href="rekapitulasi.html">Rekapitulasi</a></li>
+    <li><a href="index.html">Logout</a></li>
+  </ul>
+</nav>
+
+<!-- HEADER -->
+<header>
+  <img src="logo ditjenim.png" alt="Logo Imigrasi"/>
+  <h1>Sistem Manajemen Registrasi Tata Persuratan</h1>
+  <h2>SIMERTUA</h2>
+  <p>Kantor Imigrasi Kelas I TPI Tanjungpinang</p>
+</header>
+
+<main>
+  <!-- FORM INPUT -->
+  <section class="form-section">
+    <h2>Form Input Surat</h2>
+    <form id="formSurat">
+      <label for="jenisSurat">Jenis Surat:</label>
+      <input type="text" id="jenisSurat" name="jenisSurat" value="Keluar" readonly />
+
+      <label for="kodeSurat">Kode Surat:</label>
+      <input type="text" id="kodeSurat" name="kodeSurat" value="" placeholder="Masukkan kode surat" required />
+
+      <label for="nomorSurat">Nomor Surat:</label>
+      <input type="text" id="nomorSurat" name="nomorSurat" readonly required/>
+
+      <label for="perihal">Perihal:</label>
+      <input type="text" id="perihal" name="perihal" placeholder="Isi perihal surat" required/>
+
+      <label for="tanggalSurat">Tanggal Surat:</label>
+      <input type="date" id="tanggalSurat" name="tanggalSurat" readonly required/>
+
+      <label for="namaAdmin">Nama Admin:</label>
+      <input type="text" id="namaAdmin" name="namaAdmin" placeholder="Masukkan nama" required/>
+
+      <button type="submit">Simpan</button>
+    </form>
+    <div id="hasil" class="status-msg"></div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Kantor Imigrasi Kelas I TPI Tanjungpinang</p>
+</footer>
+
+<script>
+// === KONFIGURASI ===
+const API_URL = "https://script.google.com/macros/s/AKfycbztE20p6qU8CwegQ9aJMm6eKqCmFE12zKiLPj_85EeiLAYhC4iAsr5xT2vE9lAidtXB/exec"; // Ganti dengan URL Web App kamu
+
+const form = document.getElementById("formSurat");
+const hasil = document.getElementById("hasil");
+const nomorSuratInput = document.getElementById("nomorSurat");
+const tanggalSuratInput = document.getElementById("tanggalSurat");
+
+// Escape HTML sederhana
+function escapeHtml(str) {
+  if (!str) return "";
+  return String(str).replace(/[&<>"']/g, m => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  }[m]));
+}
+
+// Ambil nomor terakhir (tanpa menaikkan)
+async function ambilNomorTerakhir() {
+  try {
+    const response = await fetch(API_URL + "?mode=get");
+    const data = await response.json();
+    const kode = document.getElementById("kodeSurat").value || "";
+    nomorSuratInput.value = `${data.nomorSurat}`; // hanya tampil, belum naik
+  } catch (err) {
+    console.error("Gagal ambil nomor surat:", err);
+    hasil.textContent = "⚠️ Gagal ambil nomor surat dari server.";
+  }
+}
+
+// Tambahkan nomor baru setelah simpan
+async function tambahNomorBaru() {
+  try {
+    const response = await fetch(API_URL, { method: "POST" });
+    const data = await response.json();
+    return data.nomorSurat;
+  } catch (err) {
+    console.error("Gagal menambah nomor surat:", err);
+    hasil.textContent = "⚠️ Gagal memperbarui nomor surat.";
+  }
+}
+
+// Tanggal realtime
+function setTanggalHariIni() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  tanggalSuratInput.value = `${yyyy}-${mm}-${dd}`;
+}
+
+// Simpan data surat
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  // Setelah user klik Simpan → baru naikkan nomor surat di server
+  const nomorBaru = await tambahNomorBaru();
+
+  // Isi input dengan nomor baru yang baru saja dipakai
+  const kode = document.getElementById("kodeSurat").value || "";
+  nomorSuratInput.value = `${nomorBaru}`;
+
+  const suratBaru = {
+    id: Date.now(),
+    jenisSurat: escapeHtml(document.getElementById("jenisSurat").value),
+    kodeSurat: escapeHtml(kode),
+    nomorSurat: escapeHtml(`${kode}/${nomorBaru}`),
+    perihal: escapeHtml(document.getElementById("perihal").value),
+    tanggalSurat: tanggalSuratInput.value,
+    namaAdmin: escapeHtml(document.getElementById("namaAdmin").value)
+  };
+
+  // Simpan ke localStorage untuk rekap lokal
+  const data = JSON.parse(localStorage.getItem("dataSurat") || "[]");
+  data.push(suratBaru);
+  localStorage.setItem("dataSurat", JSON.stringify(data));
+
+  hasil.textContent = "✅ Surat berhasil disimpan dan nomor diperbarui.";
+
+  // Reset form untuk input baru
+  form.reset();
+  document.getElementById("jenisSurat").value = "Keluar";
+  document.getElementById("kodeSurat").value = kode;
+  setTanggalHariIni();
+
+  // Ambil nomor terakhir dari server (nomor berikutnya)
+  await ambilNomorTerakhir();
+});
+
+// Inisialisasi
+window.addEventListener("load", () => {
+  ambilNomorTerakhir();
+  setTanggalHariIni();
+});
+</script>
+</body>
+</html>
