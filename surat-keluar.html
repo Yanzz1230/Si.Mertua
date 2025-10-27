@@ -38,7 +38,7 @@
       <input type="text" id="jenisSurat" name="jenisSurat" value="Keluar" readonly />
 
       <label for="kodeSurat">Kode Surat:</label>
-      <input type="text" id="kodeSurat" name="kodeSurat" value="" placeholder="Masukkan kode surat" required />
+      <input type="text" id="kodeSurat" name="kodeSurat" placeholder="Masukkan kode surat" required />
 
       <label for="nomorSurat">Nomor Surat:</label>
       <input type="text" id="nomorSurat" name="nomorSurat" readonly required/>
@@ -64,52 +64,26 @@
 </footer>
 
 <script>
-// === KONFIGURASI ===
-const API_URL = "https://script.google.com/macros/s/AKfycbztE20p6qU8CwegQ9aJMm6eKqCmFE12zKiLPj_85EeiLAYhC4iAsr5xT2vE9lAidtXB/exec"; // Ganti dengan URL Web App kamu
+const API_URL = "https://script.google.com/macros/s/AKfycbxQ5X8xwsgLoizzGpaHeW5qW0bw5SgxF5HwTe25_gLMJbIvhSbPHZqVmWAdSmQUBB24/exec";
 
 const form = document.getElementById("formSurat");
-const hasil = document.getElementById("hasil");
+const msg = document.getElementById("hasil");
 const nomorSuratInput = document.getElementById("nomorSurat");
 const tanggalSuratInput = document.getElementById("tanggalSurat");
 
-// Escape HTML sederhana
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str).replace(/[&<>"']/g, m => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    "\"": "&quot;",
-    "'": "&#39;"
-  }[m]));
-}
-
-// Ambil nomor terakhir (tanpa menaikkan)
+// Ambil nomor terakhir (GET tetap OK)
 async function ambilNomorTerakhir() {
   try {
-    const response = await fetch(API_URL + "?mode=get");
-    const data = await response.json();
-    const kode = document.getElementById("kodeSurat").value || "";
-    nomorSuratInput.value = `${data.nomorSurat}`; // hanya tampil, belum naik
+    const res = await fetch(API_URL); // GET
+    const data = await res.json();
+    nomorSuratInput.value = data.nomorSurat || "";
   } catch (err) {
-    console.error("Gagal ambil nomor surat:", err);
-    hasil.textContent = "⚠️ Gagal ambil nomor surat dari server.";
+    msg.textContent = "⚠️ Gagal ambil nomor surat dari server.";
+    console.error(err);
   }
 }
 
-// Tambahkan nomor baru setelah simpan
-async function tambahNomorBaru() {
-  try {
-    const response = await fetch(API_URL, { method: "POST" });
-    const data = await response.json();
-    return data.nomorSurat;
-  } catch (err) {
-    console.error("Gagal menambah nomor surat:", err);
-    hasil.textContent = "⚠️ Gagal memperbarui nomor surat.";
-  }
-}
-
-// Tanggal realtime
+// Set tanggal hari ini otomatis
 function setTanggalHariIni() {
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -118,49 +92,67 @@ function setTanggalHariIni() {
   tanggalSuratInput.value = `${yyyy}-${mm}-${dd}`;
 }
 
-// Simpan data surat
-form.addEventListener("submit", async function(e) {
+// === Fungsi simpan yang dikirim sebagai form-urlencoded (no custom Content-Type header) ===
+async function simpanSurat(e) {
   e.preventDefault();
+  msg.textContent = "⏳ Menyimpan data...";
 
-  // Setelah user klik Simpan → baru naikkan nomor surat di server
-  const nomorBaru = await tambahNomorBaru();
+  try {
+    // 1) Ambil nomor baru (kirim form data sederhana)
+    const nomorBody = new URLSearchParams();
+    nomorBody.append('mode', 'next');
 
-  // Isi input dengan nomor baru yang baru saja dipakai
-  const kode = document.getElementById("kodeSurat").value || "";
-  nomorSuratInput.value = `${nomorBaru}`;
+    const nomorRes = await fetch(API_URL, {
+      method: 'POST',
+      body: nomorBody
+    });
+    const nomorData = await nomorRes.json();
+    const nomorBaru = nomorData.nomorSurat;
+    if (!nomorBaru) throw new Error("Tidak dapat nomor baru dari server");
 
-  const suratBaru = {
-    id: Date.now(),
-    jenisSurat: escapeHtml(document.getElementById("jenisSurat").value),
-    kodeSurat: escapeHtml(kode),
-    nomorSurat: escapeHtml(`${kode}/${nomorBaru}`),
-    perihal: escapeHtml(document.getElementById("perihal").value),
-    tanggalSurat: tanggalSuratInput.value,
-    namaAdmin: escapeHtml(document.getElementById("namaAdmin").value)
-  };
+    // 2) Siapkan data surat sebagai form-urlencoded juga
+    const body = new URLSearchParams();
+    body.append('jenisSurat', document.getElementById('jenisSurat').value);
+    body.append('kodeSurat', document.getElementById('kodeSurat').value);
+    body.append('nomorSurat', nomorBaru);
+    body.append('perihal', document.getElementById('perihal').value);
+    body.append('tanggalSurat', document.getElementById('tanggalSurat').value);
+    body.append('namaAdmin', document.getElementById('namaAdmin').value);
 
-  // Simpan ke localStorage untuk rekap lokal
-  const data = JSON.parse(localStorage.getItem("dataSurat") || "[]");
-  data.push(suratBaru);
-  localStorage.setItem("dataSurat", JSON.stringify(data));
+    // 3) Kirim simpan (form-encoded)
+    const simpanRes = await fetch(API_URL, {
+      method: 'POST',
+      body: body
+    });
+    const hasil = await simpanRes.json();
 
-  hasil.textContent = "✅ Surat berhasil disimpan dan nomor diperbarui.";
+    if (hasil.status === 'success') {
+      msg.textContent = `✅ Surat berhasil disimpan! Nomor: ${nomorBaru}`;
+      document.getElementById('formSurat').reset();
+      document.getElementById('jenisSurat').value = 'Keluar';
+      setTanggalHariIni();
+      ambilNomorTerakhir();
+    } else {
+      msg.textContent = "❌ Gagal menyimpan surat! " + (hasil.message || "");
+      console.error("Server:", hasil);
+    }
 
-  // Reset form untuk input baru
-  form.reset();
-  document.getElementById("jenisSurat").value = "Keluar";
-  document.getElementById("kodeSurat").value = kode;
-  setTanggalHariIni();
+  } catch (err) {
+    msg.textContent = "❌ Terjadi kesalahan koneksi server.";
+    console.error("Client error:", err);
+  }
+}
 
-  // Ambil nomor terakhir dari server (nomor berikutnya)
-  await ambilNomorTerakhir();
-});
+// Pasang event
+form.removeEventListener && form.removeEventListener('submit', simpanSurat);
+form.addEventListener('submit', simpanSurat);
 
-// Inisialisasi
+// Jalankan saat halaman dimuat
 window.addEventListener("load", () => {
-  ambilNomorTerakhir();
   setTanggalHariIni();
+  ambilNomorTerakhir();
 });
 </script>
+
 </body>
 </html>
