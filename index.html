@@ -1,178 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Situs Sedang Pemeliharaan • Kembali Segera</title>
-  <meta name="description" content="Situs ini sedang dalam pemeliharaan rutin. Mohon maaf atas ketidaknyamanan — kami akan kembali segera." />
-  <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
-  <style>
-    :root{
-      --bg:#0f1724; /* dark blue */
-      --card:#0b1220;
-      --accent:#06b6d4; /* teal */
-      --muted:#9aa4b2;
-      --glass: rgba(255,255,255,0.04);
-      color-scheme: dark;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(6,182,212,0.08), transparent),
-                  radial-gradient(900px 500px at 90% 90%, rgba(99,102,241,0.06), transparent),
-                  var(--bg);
-      color:#e6eef6;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      display:flex;align-items:center;justify-content:center;padding:32px;
-    }
-    .card{
-      width:100%;max-width:960px;padding:32px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));box-shadow:0 15px 40px rgba(2,6,23,0.6);
-      display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center;
-    }
-    @media (max-width:880px){ .card{grid-template-columns:1fr; padding:24px} }
-
-    .hero h1{margin:0 0 8px;font-size:28px;letter-spacing:-0.02em}
-    .hero p{margin:0 0 18px;color:var(--muted);line-height:1.5}
-
-    .illustration{
-      display:flex;align-items:center;gap:14px;
-    }
-    .gear{
-      width:120px;height:120px;border-radius:24px;background:linear-gradient(135deg,var(--glass),transparent);display:flex;align-items:center;justify-content:center;position:relative;backdrop-filter:blur(6px);
-    }
-    .gear svg{width:78px;height:78px;transform-origin:center;animation:spin 8s linear infinite}
-    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
-
-    .meta{font-size:13px;color:var(--muted)}
-    .countdown{display:flex;gap:10px;margin-top:14px}
-    .countdown .item{background:rgba(255,255,255,0.03);padding:12px 14px;border-radius:10px;min-width:64px;text-align:center}
-    .countdown .item b{display:block;font-size:18px}
-
-    .actions{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid transparent}
-    .btn-primary{background:linear-gradient(90deg,var(--accent),#7c3aed);color:#042027}
-    .btn-muted{background:transparent;color:var(--accent);border-color:rgba(255,255,255,0.06)}
-
-    .right{
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:22px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
-      display:flex;flex-direction:column;gap:12px;align-items:stretch
-    }
-    .progress{height:8px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden}
-    .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),#7c3aed);transition:width 0.6s cubic-bezier(.2,.9,.2,1)}
-
-    .contact small{color:var(--muted)}
-    footer{margin-top:18px;color:var(--muted);font-size:13px}
-
-    /* small easter micro-interaction */
-    .logo{display:inline-flex;align-items:center;gap:8px}
-    .logo .dot{width:12px;height:12px;border-radius:3px;background:var(--accent);box-shadow:0 6px 18px rgba(6,182,212,0.18)}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Sistem Administrasi</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="card" role="main" aria-labelledby="maint-title">
-    <section class="hero">
-      <div class="logo" aria-hidden="true"><span class="dot"></span><strong>NamaSitus</strong></div>
-      <h1 id="maint-title">Maaf — Situs sedang dalam pemeliharaan</h1>
-      <p>Kami sedang melakukan pembaruan dan pemeliharaan rutin untuk meningkatkan performa dan keamanan. Terima kasih atas kesabaran Anda.</p>
-
-      <div class="illustration">
-        <div class="gear" aria-hidden="true">
-          <!-- simple gear svg -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06A2 2 0 1 1 2.3 16.8l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09c.67 0 1.25-.4 1.51-1A1.65 1.65 0 0 0 3.9 5.2L3.84 5.14A2 2 0 1 1 6.67 2.31l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V2A2 2 0 1 1 14 2v.09c0 .67.4 1.25 1 1.51.68.29 1.4.12 1.82-.33l.06-.06A2 2 0 1 1 21.7 7.2l-.06.06a1.65 1.65 0 0 0-.33 1.82V10c0 .67.4 1.25 1 1.51H21a2 2 0 1 1 0 4h-.09c-.67 0-1.25.4-1.51 1z"/>
-          </svg>
-        </div>
-
-        <div>
-          <div class="meta">Estimasi kembali online dalam:</div>
-          <div class="countdown" id="countdown" aria-live="polite">
-            <div class="item"><b id="d">--</b><span>hari</span></div>
-            <div class="item"><b id="h">--</b><span>jam</span></div>
-            <div class="item"><b id="m">--</b><span>menit</span></div>
-            <div class="item"><b id="s">--</b><span>detik</span></div>
-          </div>
-
-          <div class="actions">
-            <a class="btn btn-primary" id="refreshBtn" href="#">Laporkan Masalah</a>
-            <a class="btn btn-muted" href="/">Kembali ke Beranda</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <aside class="right" aria-label="Info pemeliharaan">
-      <div>
-        <div class="meta">Progres pemeliharaan</div>
-        <div class="progress" aria-hidden="true"><i id="bar"></i></div>
-      </div>
-
-      <div class="contact">
-        <div class="meta">Perlu bantuan?</div>
-        <div><strong>Tim Support</strong></div>
-        <div class="meta"><small>Email: <a href="mailto:support@namasitus.com">support@namasitus.com</a></small></div>
-        <div class="meta"><small>Telegram: <a href="https://t.me/namasitus" target="_blank" rel="noopener">@namasitus</a></small></div>
-      </div>
-
-      <div>
-        <div class="meta">Catatan</div>
-        <div class="meta">Kami melakukan update keamanan dan optimasi. Jika perlu konfirmasi lebih lanjut, hubungi tim support.</div>
-      </div>
-
-      <footer>Versi pemeliharaan • {PID} • &copy; <span id="year"></span></footer>
-    </aside>
-  </main>
+  <div class="login-container">
+    <div class="login-box">
+      <img src="logo ditjenim.png" alt="Logo" width="100">
+      <h2>Login</h2>
+      <input type="text" id="username" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button id="btnLogin">Login</button>
+    </div>
+  </div>
 
   <script>
-    // Konfigurasi: ubah `returnDate` sesuai kebutuhan.
-    // Default: kembali online dalam 48 jam dari saat halaman dimuat.
-    const defaultHours = 48;
-    const now = new Date();
-    const returnDate = new Date(now.getTime() + defaultHours * 60 * 60 * 1000);
+    // data login hardcode
+    const users = [
+      { email: "TU@gmail.com", password: "123" },
+      { email: "TIKKIM@gmail.com", password: "123" }
+    ];
 
-    // Jika ingin menggunakan tanggal tetap, ganti baris di atas, contoh:
-    // const returnDate = new Date('2025-11-01T10:00:00');
+    document.getElementById("btnLogin").addEventListener("click", () => {
+      const email = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-    // Countdown
-    function updateCountdown(){
-      const diff = returnDate - new Date();
-      const elD = document.getElementById('d');
-      const elH = document.getElementById('h');
-      const elM = document.getElementById('m');
-      const elS = document.getElementById('s');
-      if(diff <= 0){
-        elD.textContent = '0'; elH.textContent='0'; elM.textContent='0'; elS.textContent='0';
-        document.getElementById('bar').style.width = '100%';
-        return clearInterval(interval);
+      if (!email || !password) {
+        alert("⚠️ Isi email dan password!");
+        return;
       }
-      const s = Math.floor(diff/1000)%60;
-      const m = Math.floor(diff/1000/60)%60;
-      const h = Math.floor(diff/1000/3600)%24;
-      const d = Math.floor(diff/1000/3600/24);
-      elD.textContent = d; elH.textContent = h; elM.textContent = m; elS.textContent = s;
 
-      // update progress bar: percent of elapsed time from start->return
-      const total = defaultHours*3600*1000;
-      const elapsed = total - diff;
-      const pct = Math.max(0, Math.min(100, Math.round((elapsed/total)*100)));
-      document.getElementById('bar').style.width = pct + '%';
-    }
-    const interval = setInterval(updateCountdown, 1000);
-    updateCountdown();
+      const user = users.find(u => u.email === email && u.password === password);
 
-    // set year
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    // small behavior: "Laporkan Masalah" opens mail compose
-    document.getElementById('refreshBtn').addEventListener('click', (e)=>{
-      e.preventDefault();
-      window.location.href = 'mailto:support@namasitus.com?subject=Laporan%20masalah%20-%20Situs%20down';
+      if (user) {
+        alert("✅ Login berhasil");
+        localStorage.setItem("userEmail", email);
+        window.location.href = "surat-keluar.html"; // pindah halaman setelah login
+      } else {
+        alert("❌ Login gagal: email/password salah");
+      }
     });
-
-    // Accessibility: focus trap not needed for static page, but ensure readable when JS disabled
   </script>
 </body>
 </html>
